@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Flask: app.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/app.py",
+            "envFile": "${workspaceFolder}/.env",
+            "args": [
+                "run"
+            ],
+            "jinja": true,
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+    ]
+}

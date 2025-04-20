@@ -1,0 +1,378 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+  <!-- Location Selection Form -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 mb-8">
+    <form id="locationForm" class="space-y-6">
+      <!-- Continent Selection -->
+      <div>
+        <label for="continent" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Select Continent
+        </label>
+        <select id="continent" name="continent" required
+                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-aider-teal focus:border-aider-teal rounded-md dark:bg-gray-700 dark:border-gray-600">
+          <option value="">Choose a continent...</option>
+          {% for continent in countries.keys() %}
+            <option value="{{ continent }}">{{ continent }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Country Selection -->
+      <div>
+        <label for="country" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Select Country
+        </label>
+        <select id="country" name="country" required disabled
+                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-aider-teal focus:border-aider-teal rounded-md dark:bg-gray-700 dark:border-gray-600">
+          <option value="">Choose a country...</option>
+        </select>
+      </div>
+
+      <!-- State/Province Selection -->
+      <div>
+        <label for="state" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Select State/Province
+        </label>
+        <select id="state" name="state" disabled
+                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-aider-teal focus:border-aider-teal rounded-md dark:bg-gray-700 dark:border-gray-600">
+          <option value="">Choose a state/province...</option>
+        </select>
+      </div>
+
+      <!-- City/Location Search -->
+      <div>
+        <label for="location" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          City or Specific Location
+        </label>
+        <input type="text" id="location" name="location"
+               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-aider-teal focus:border-aider-teal dark:bg-gray-700 dark:border-gray-600"
+               placeholder="Enter city, address or location">
+      </div>
+
+      <!-- Coordinates Display -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label for="latitude" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Latitude
+          </label>
+          <input type="number" id="latitude" name="latitude" step="0.000001" required readonly
+                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-aider-teal focus:border-aider-teal dark:bg-gray-700 dark:border-gray-600">
+        </div>
+        <div>
+          <label for="longitude" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Longitude
+          </label>
+          <input type="number" id="longitude" name="longitude" step="0.000001" required readonly
+                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-aider-teal focus:border-aider-teal dark:bg-gray-700 dark:border-gray-600">
+        </div>
+      </div>
+
+      <!-- Manual Coordinate Override -->
+      <div class="flex items-center">
+        <input type="checkbox" id="manualCoords" name="manualCoords"
+               class="h-4 w-4 text-aider-teal focus:ring-aider-teal border-gray-300 rounded">
+        <label for="manualCoords" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+          Override coordinates manually
+        </label>
+      </div>
+
+      <!-- Geocode Button -->
+      <div>
+        <button type="button" id="geocodeBtn"
+                class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-aider-blue hover:bg-aider-teal focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-aider-blue transition-colors duration-200">
+          <span>Find Coordinates</span>
+          <svg class="animate-spin ml-2 h-5 w-5 text-white hidden" id="geocodeSpinner" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Submit Button -->
+      <div>
+        <button type="submit"
+                class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-aider-teal hover:bg-aider-blue focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-aider-teal transition-colors duration-200">
+          <span>Run AIDER Analysis</span>
+          <svg class="animate-spin ml-2 h-5 w-5 text-white hidden" id="loadingSpinner" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Results Section -->
+  <div id="results" class="space-y-6 hidden">
+    <!-- Weather Panel -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Current Weather</h3>
+      <ul id="weatherList" class="list-disc list-inside text-gray-700 dark:text-gray-300"></ul>
+    </div>
+
+    <!-- News Panel -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Recent Disaster News</h3>
+      <ul id="newsList" class="list-disc list-inside text-gray-700 dark:text-gray-300"></ul>
+    </div>
+
+    <!-- Satellite Analysis Panel -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Satellite Analysis</h3>
+      <p id="satelliteAnalysis" class="text-gray-700 dark:text-gray-300"></p>
+    </div>
+
+    <!-- Situation Summary -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Situation Summary</h3>
+      <p id="summary" class="text-gray-700 dark:text-gray-300"></p>
+    </div>
+
+    <!-- Predicted Risks -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Predicted Risks</h3>
+      <div id="risks" class="text-gray-700 dark:text-gray-300"></div>
+    </div>
+
+    <!-- Affected Areas -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Affected Areas</h3>
+      <div id="affected_areas" class="text-gray-700 dark:text-gray-300"></div>
+    </div>
+
+    <!-- Recommended Actions -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Recommended Actions</h3>
+      <div id="actions" class="text-gray-700 dark:text-gray-300"></div>
+    </div>
+
+    <!-- Urgency Score -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Urgency Score</h3>
+      <div class="flex items-center">
+        <div id="urgencyScore" class="text-4xl font-bold"></div>
+        <div class="ml-2 text-sm text-gray-500 dark:text-gray-400">(1–5 scale)</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // Countries data from Flask
+  const countriesData       = {{ countries|tojson|safe }};
+  const continentSelect     = document.getElementById('continent');
+  const countrySelect       = document.getElementById('country');
+  const stateSelect         = document.getElementById('state');
+  const locationInput       = document.getElementById('location');
+  const latitudeInput       = document.getElementById('latitude');
+  const longitudeInput      = document.getElementById('longitude');
+  const manualCoordsCheckbox= document.getElementById('manualCoords');
+  const geocodeBtn          = document.getElementById('geocodeBtn');
+  const geocodeSpinner      = document.getElementById('geocodeSpinner');
+  const loadingSpinner      = document.getElementById('loadingSpinner');
+  const resultsSection      = document.getElementById('results');
+
+  // Populate countries when continent changes
+  continentSelect.addEventListener('change', e => {
+    const cont = e.target.value;
+    countrySelect.innerHTML = '<option value="">Choose a country...</option>';
+    stateSelect.innerHTML   = '<option value="">Choose a state/province...</option>';
+    stateSelect.disabled    = true;
+    latitudeInput.value     = '';
+    longitudeInput.value    = '';
+    if (!cont) {
+      countrySelect.disabled = true;
+      return;
+    }
+    countriesData[cont].forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.code;
+      opt.textContent = c.name;
+      countrySelect.appendChild(opt);
+    });
+    countrySelect.disabled = false;
+  });
+
+  // Fetch states when country changes
+  countrySelect.addEventListener('change', async e => {
+    stateSelect.innerHTML = '<option value="">Choose a state/province...</option>';
+    stateSelect.disabled = true;
+    latitudeInput.value = '';
+    longitudeInput.value = '';
+    const cc = e.target.value;
+    if (!cc) return;
+    try {
+      const resp = await fetch(`/states?country=${encodeURIComponent(cc)}`);
+      const subs = await resp.json();
+      subs.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.code;
+        opt.textContent = s.name;
+        stateSelect.appendChild(opt);
+      });
+      if (subs.length) stateSelect.disabled = false;
+    } catch(err){
+      console.error('States fetch error', err);
+    }
+  });
+
+  // Manual coords toggle
+  manualCoordsCheckbox.addEventListener('change', e => {
+    const manual = e.target.checked;
+    latitudeInput.readOnly  = !manual;
+    longitudeInput.readOnly = !manual;
+    geocodeBtn.disabled     = manual;
+    if (manual) {
+      latitudeInput.value = '';
+      longitudeInput.value= '';
+    }
+  });
+
+  // Geocode via OSM
+  async function geocode(){
+    if (manualCoordsCheckbox.checked) return;
+    geocodeSpinner.classList.remove('hidden');
+    geocodeBtn.disabled = true;
+    let q = locationInput.value.trim();
+    if (countrySelect.value) {
+      q += q ? ', ' + countrySelect.options[countrySelect.selectedIndex].text : countrySelect.options[countrySelect.selectedIndex].text;
+      if (!stateSelect.disabled && stateSelect.value) {
+        q += ', ' + stateSelect.options[stateSelect.selectedIndex].text;
+      }
+    }
+    if (!q) {
+      alert('Please enter a location or select a country');
+      geocodeSpinner.classList.add('hidden');
+      geocodeBtn.disabled = false;
+      return;
+    }
+    try {
+      const resp = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1`, {
+        headers: {'Accept':'application/json','User-Agent':'AIDER-Emergency-Response-System'}
+      });
+      const arr = await resp.json();
+      if (arr.length) {
+        latitudeInput.value  = parseFloat(arr[0].lat);
+        longitudeInput.value = parseFloat(arr[0].lon);
+      } else {
+        alert('Location not found. Try again or enter coords manually.');
+      }
+    } catch(err){
+      console.error('Geocode error', err);
+      alert('Error fetching coordinates');
+    } finally {
+      geocodeSpinner.classList.add('hidden');
+      geocodeBtn.disabled = false;
+    }
+  }
+  geocodeBtn.addEventListener('click', geocode);
+  locationInput.addEventListener('keypress', e => {
+    if (e.key==='Enter'){ e.preventDefault(); geocode(); }
+  });
+
+  // Handle form submit
+  document.getElementById('locationForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!latitudeInput.value || !longitudeInput.value) {
+      alert('Please obtain coordinates first');
+      return;
+    }
+    loadingSpinner.classList.remove('hidden');
+    resultsSection.classList.add('hidden');
+
+    const payload = {
+      country:  countrySelect.value,
+      state:    stateSelect.value || null,
+      location: locationInput.value || null,
+      lat:      parseFloat(latitudeInput.value),
+      lon:      parseFloat(longitudeInput.value)
+    };
+
+    try {
+      const resp = await fetch('/analyze', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(payload)
+      });
+      const data = await resp.json();
+      console.log('Received:', data);
+
+      // Detect placeholder Gemini output
+      if (
+        data.summary === '...' ||
+        (Array.isArray(data.risks) && data.risks[0] === '...') ||
+        (Array.isArray(data.actions) && data.actions[0] === '...')
+      ) {
+        alert("⚠️ Gemini returned placeholder data. Please try again.");
+        return;
+      }
+      
+      // Situation Summary
+      document.getElementById('summary').textContent = data.summary || 'No summary';
+
+      // Predicted Risks
+      document.getElementById('risks').innerHTML = Array.isArray(data.risks) && data.risks.length
+        ? `<ul class="list-disc list-inside">${data.risks.map(risk => `<li>${risk}</li>`).join('')}</ul>`
+        : '<p>None</p>';
+
+      // Affected Areas
+      document.getElementById('affected_areas').innerHTML = Array.isArray(data.affected_areas) && data.affected_areas.length
+        ? `<ul class="list-disc list-inside">${data.affected_areas.map(area => `<li>${area}</li>`).join('')}</ul>`
+        : '<p>None</p>';
+
+      // Recommended Actions
+      document.getElementById('actions').innerHTML = Array.isArray(data.actions) && data.actions.length
+        ? `<ul class="list-disc list-inside">${data.actions.map(action => `<li>${action}</li>`).join('')}</ul>`
+        : '<p>None</p>';
+
+      const uscoreEl = document.getElementById('urgencyScore');
+      uscoreEl.textContent = data.urgency_score ?? 'N/A';
+      uscoreEl.className   = `text-4xl font-bold ${
+        data.urgency_score>=4? 'text-red-600':
+        data.urgency_score>=3? 'text-yellow-600':
+        'text-green-600' }`;
+
+      // Weather
+      if (data.weather) {
+        document.getElementById('weatherList').innerHTML = `
+          <li>🌡️ ${data.weather.temperature}</li>
+          <li>☁️ ${data.weather.condition}</li>
+          <li>💧 ${data.weather.humidity}</li>
+          <li>💨 ${data.weather.wind}</li>
+          <li>☁️ ${data.weather.cloudiness}</li>
+        `;
+      }
+
+      // News
+      if (data.news) {
+        document.getElementById('newsList').innerHTML = data.news.map(item => `
+          <li class="mb-2">
+            <a href="${item.link}" target="_blank" class="text-aider-blue hover:underline">
+              ${item.title}
+            </a>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              ${item.source} – ${item.snippet}
+            </p>
+          </li>
+        `).join('');
+      }
+
+      // Satellite Analysis
+      if (data.satellite_analysis) {
+        document.getElementById('satelliteAnalysis').textContent = data.satellite_analysis;
+      }
+
+      resultsSection.classList.remove('hidden');
+    } catch(err){
+      console.error('Analyze error', err);
+      alert('Error running analysis');
+    } finally {
+      loadingSpinner.classList.add('hidden');
+    }
+  });
+</script>
+{% endblock %}

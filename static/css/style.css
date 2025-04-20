@@ -1,0 +1,46 @@
+/* Custom styles beyond Tailwind */
+
+/* Smooth transitions for dark mode */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Loading spinner animation */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Custom focus styles */
+.focus-visible:focus {
+    outline: 2px solid #247BA0;
+    outline-offset: 2px;
+}
+
+/* Dark mode overrides */
+.dark .focus-visible:focus {
+    outline-color: #FF1654;
+}

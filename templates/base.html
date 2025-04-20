@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AIDER - AI‑Driven Emergency Response System{% endblock %}</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        aider: {
+                            blue: '#0A2463',
+                            teal: '#247BA0',
+                            red: '#FF1654',
+                        },
+                    },
+                },
+            },
+            darkMode: 'class',
+        }
+    </script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gray-50 dark:bg-gray-900">
+    <!-- Header Banner -->
+    <header class="bg-aider-blue text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <img src="{{ url_for('static', filename='images/banner.jpg') }}"
+                 alt="AIDER Banner"
+                 class="w-full h-32 object-cover rounded-lg shadow-xl">
+            <h1 class="text-3xl font-bold mt-4 text-center">
+                AIDER — AI‑Driven Emergency Response System
+            </h1>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-aider-blue text-white py-4 mt-8">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2025 AIDER. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Dark Mode Toggle -->
+    <button id="darkModeToggle"
+            class="fixed bottom-4 right-4 bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-800 p-3 rounded-full shadow-lg">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
+          </path>
+        </svg>
+    </button>
+
+    <!-- Main JS (if any) -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>
